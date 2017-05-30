@@ -29,42 +29,57 @@ def simplifyImage(oldImage):
     return simpleImg
 
 def getBoard():
-    screen = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
-    bwImg = simplifyImage(screen)
+    startTime = time.time()
 
-    lines = cv2.HoughLinesP(bwImg, 4, np.pi/180, 400, minLineLength=400, maxLineGap=10)
-
-    collectingTime = time.time()
     listLength = 0
+    i = 0
+    while ((time.time() - startTime) < 3):
+        screen = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
+        bwImg = simplifyImage(screen)
 
-    lineTemp = lines.tolist()
-    lineList = []
-    for line in lineTemp:
-        line = line[0]
-        lineList.append(line)
-    #print(lineList)
-    print("list")
+        lines = cv2.HoughLinesP(bwImg, 4, np.pi/180, 400, minLineLength=400, maxLineGap=10)
 
-    for pair in itertools.combinations(lineList, 2):
-        if (lineRefiner(pair[0], pair[1])) == False:
-            continue
-        else:
-            #print(pair)
-            #print("pair")
-            lineList.remove(pair[0])
-            lineList.remove(pair[1])
-            lineList.append(lineRefiner(pair[0], pair[1]))
-    print(lineList)
+        lineTemp = lines.tolist()
+        lineList = []
+        for line in lineTemp:
+            line = line[0]
+            lineList.append(line)
+        #print(lineList)
+        #print("list")
 
-    for line in lineList:
-        #print(line)
-        cv2.line(bwImg, (line[0], line[1]), (line[2], line[3]), [100, 255, 100], 4)
-        cv2.circle(bwImg, (line[0], line[1]), 2, (255, 255, 255), 3)
-        cv2.circle(bwImg, (line[2], line[3]), 2, (255, 255, 255), 3)
-    print("end of loop")
+        for pair in itertools.combinations(lineList, 2):
+            if (lineRefiner(pair[0], pair[1])) == False:
+                continue
+            else:
+                #print(pair)
+                #print("pair")
+                lineList.remove(pair[0])
+                lineList.remove(pair[1])
+                lineList.append(lineRefiner(pair[0], pair[1]))
+        #print(lineList)
+
+        i = i+1
+        listLength = listLength + len(lineList)
+        average = listLength/i
+        for line in lineList:
+            #print(line)
+            cv2.line(bwImg, (line[0], line[1]), (line[2], line[3]), [100, 255, 100], 4)
+            cv2.circle(bwImg, (line[0], line[1]), 2, (255, 255, 255), 3)
+            cv2.circle(bwImg, (line[2], line[3]), 2, (255, 255, 255), 3)
+        #print("end of loop")
+
+        cv2.imshow('Window', bwImg)
+        if cv2.waitKey(25) & 0xFF == ord('q'):
+            cv2.destroyAllWindows()
+            break
+    #print(average)
+    #average = int(average)
+    #print(average)
+    boardSize = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    #print('done')
+    return boardSize[int((average-12)/2)]
 
 
-    return bwImg
 
 # Takes two lines and if they are too similar, it averages their points together and returns a single line
 # to represent the line that has been counted twice.
@@ -102,17 +117,17 @@ def findCircles(bwImg):
 for i in list(range(4))[::-1]:
     print(i+1)
     time.sleep(1)
-getBoard()
-
-markTime = time.time()
-while(True):
-    screen = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
-    newScreen = simplifyImage(screen)
-    finalScreen = board(newScreen)
-    cv2.imshow('Window', finalScreen)
-
-    print(time.time() - markTime)
-    markTime = time.time()
-    if cv2.waitKey(25) & 0xFF == ord('q'):
-        cv2.destroyAllWindows()
-        break
+size = getBoard()
+print('Board is ' + str(size) + 'x' + str(size))
+# markTime = time.time()
+# while(True):
+#     screen = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
+#     newScreen = simplifyImage(screen)
+#     finalScreen = board(newScreen)
+#     cv2.imshow('Window', finalScreen)
+#
+#     print(time.time() - markTime)
+#     markTime = time.time()
+#     if cv2.waitKey(25) & 0xFF == ord('q'):
+#         cv2.destroyAllWindows()
+#         break
