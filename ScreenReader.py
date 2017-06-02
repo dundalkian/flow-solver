@@ -4,14 +4,24 @@ import cv2
 import time
 import itertools
 
+
+#SAMPLE CODE FOR LATER
+# >>> pyautogui.moveTo(100, 200)   # moves mouse to X of 100, Y of 200.
+# >>> pyautogui.moveRel(0, 50)     # move the mouse down 50 pixels.
+# >>> pyautogui.moveRel(-30, 0)     # move the mouse left 30 pixels.
+# >>> pyautogui.moveRel(-30, None)  # move the mouse left 30 pixels.
+
+
+
+
 import pyautogui as gui
 
 #numpy, pillow, opencv
 
 
-# Make a mask to help get rid of lines
+# Make a mask to help get rid of lines DONE
 
-# Add logic to get rid of duplicate lines (maybe find dups then average them into one line?)
+# Add logic to get rid of duplicate lines (maybe find dups then average them into one line?) DONE
 
 def playArea(img):
     area = np.array([[5, 180], [495, 180], [495, 730], [5, 730]])
@@ -87,7 +97,7 @@ def lineRefiner(line1, line2):      # Where a line is a 4 element array of ints 
     #line1 = line1[0]
     #line2 = line2[0]
     #print(line1)
-    e = 5 # Allowed error
+    e = 5   # Allowed error
     for i in range(4):
         if (line2[i] - line1[i]) < (e * -1) or (line2[i] - line1[i]) > e:
             #print(False)
@@ -99,9 +109,7 @@ def lineRefiner(line1, line2):      # Where a line is a 4 element array of ints 
     #print("newline")
     return newLine
 
-
-
-
+# TODO - Find Circle optimizations for all boards. Also, find relative size of circles on rect. boards.
 def findCircles(bwImg):
     circles = cv2.HoughCircles(bwImg, cv2.HOUGH_GRADIENT, 1, 30, param1=300, param2=40, minRadius=31, maxRadius=75) #25 min 60 max good for 6x6 boards/ 31 min 80 mqx for 5x5.
     #print(circles)
@@ -113,6 +121,12 @@ def findCircles(bwImg):
         # draw the center of the circle
         cv2.circle(bwImg, (i[0], i[1]), 2, (100, 100, 255), 3)
     return bwImg
+
+def createBoard():
+    # TODO - Change output of getBoard() to a list, for rect. boards (WTF am I going to do with the hex set...?)
+    size = getBoard()
+
+
 
 for i in list(range(4))[::-1]:
     print(i+1)
