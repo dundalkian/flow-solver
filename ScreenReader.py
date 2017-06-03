@@ -4,26 +4,11 @@ import cv2
 import time
 import itertools
 
-
-#SAMPLE CODE FOR LATER
-# >>> pyautogui.moveTo(100, 200)   # moves mouse to X of 100, Y of 200.
-# >>> pyautogui.moveRel(0, 50)     # move the mouse down 50 pixels.
-# >>> pyautogui.moveRel(-30, 0)     # move the mouse left 30 pixels.
-# >>> pyautogui.moveRel(-30, None)  # move the mouse left 30 pixels.
-
-
-
-
-import pyautogui as gui
-
 #numpy, pillow, opencv
 
 
-# Make a mask to help get rid of lines DONE
-
-# Add logic to get rid of duplicate lines (maybe find dups then average them into one line?) DONE
-
-def playArea(img):
+# TODO - Make the mask automatically applied
+def maskedArea(img):
     area = np.array([[5, 180], [495, 180], [495, 730], [5, 730]])
     mask = np.zeros_like(img)
     cv2.fillPoly(mask, [area], 255)
@@ -32,82 +17,14 @@ def playArea(img):
 
 
 
-def simplifyImage(oldImage):
-    simpleImg = cv2.cvtColor(oldImage, cv2.COLOR_BGR2GRAY)
+def getSimpleImage():
+    Img = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
+    simpleImg = cv2.cvtColor(Img, cv2.COLOR_BGR2GRAY)
     simpleImg = cv2.Canny(simpleImg, threshold1 = 150, threshold2 = 300)
-    simpleImg = playArea(simpleImg)
+    simpleImg = maskedArea(simpleImg)
     return simpleImg
 
-def getBoard():
-    startTime = time.time()
 
-    listLength = 0
-    i = 0
-    while ((time.time() - startTime) < 3):
-        screen = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
-        bwImg = simplifyImage(screen)
-
-        lines = cv2.HoughLinesP(bwImg, 4, np.pi/180, 400, minLineLength=400, maxLineGap=10)
-
-        lineTemp = lines.tolist()
-        lineList = []
-        for line in lineTemp:
-            line = line[0]
-            lineList.append(line)
-        #print(lineList)
-        #print("list")
-
-        for pair in itertools.combinations(lineList, 2):
-            if (lineRefiner(pair[0], pair[1])) == False:
-                continue
-            else:
-                #print(pair)
-                #print("pair")
-                lineList.remove(pair[0])
-                lineList.remove(pair[1])
-                lineList.append(lineRefiner(pair[0], pair[1]))
-        #print(lineList)
-
-        i = i+1
-        listLength = listLength + len(lineList)
-        average = listLength/i
-        for line in lineList:
-            #print(line)
-            cv2.line(bwImg, (line[0], line[1]), (line[2], line[3]), [100, 255, 100], 4)
-            cv2.circle(bwImg, (line[0], line[1]), 2, (255, 255, 255), 3)
-            cv2.circle(bwImg, (line[2], line[3]), 2, (255, 255, 255), 3)
-        #print("end of loop")
-
-        cv2.imshow('Window', bwImg)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            cv2.destroyAllWindows()
-            break
-    #print(average)
-    #average = int(average)
-    #print(average)
-    boardSize = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-    #print('done')
-    return boardSize[int((average-12)/2)]
-
-
-
-# Takes two lines and if they are too similar, it averages their points together and returns a single line
-# to represent the line that has been counted twice.
-def lineRefiner(line1, line2):      # Where a line is a 4 element array of ints (x1 y1 x2 y2)
-    #line1 = line1[0]
-    #line2 = line2[0]
-    #print(line1)
-    e = 5   # Allowed error
-    for i in range(4):
-        if (line2[i] - line1[i]) < (e * -1) or (line2[i] - line1[i]) > e:
-            #print(False)
-            return False
-    newLine = []
-    for i in range(4):
-       newLine.append(int((line1[i] + line2[i])/2))
-    #print(newLine)
-    #print("newline")
-    return newLine
 
 # TODO - Find Circle optimizations for all boards. Also, find relative size of circles on rect. boards.
 def findCircles(bwImg):
@@ -122,17 +39,19 @@ def findCircles(bwImg):
         cv2.circle(bwImg, (i[0], i[1]), 2, (100, 100, 255), 3)
     return bwImg
 
-def createBoard():
-    # TODO - Change output of getBoard() to a list, for rect. boards (WTF am I going to do with the hex set...?)
-    size = getBoard()
+
+#
+# for i in list(range(4))[::-1]:
+#     print(i+1)
+#     time.sleep(1)
+# size = getBoard()
+# print('Board is ' + str(size) + 'x' + str(size))
 
 
 
-for i in list(range(4))[::-1]:
-    print(i+1)
-    time.sleep(1)
-size = getBoard()
-print('Board is ' + str(size) + 'x' + str(size))
+
+
+
 # markTime = time.time()
 # while(True):
 #     screen = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
