@@ -24,6 +24,18 @@ def getSimpleImage():
     simpleImg = maskedArea(simpleImg)
     return simpleImg
 
+def findLines():
+    simpleImage = getSimpleImage()
+
+    lines = cv2.HoughLinesP(simpleImage, 4, np.pi / 180, 400, minLineLength=400, maxLineGap=10)
+
+    lineTemp = lines.tolist()
+    lineList = []
+    for line in lineTemp:
+        line = line[0]
+        lineList.append(line)
+
+    return lineList
 
 
 # TODO - Find Circle optimizations for all boards. Also, find relative size of circles on rect. boards.
