@@ -19,9 +19,12 @@ def maskedArea(img):
 
 def getSimpleImage():
     Img = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
-    simpleImg = cv2.cvtColor(Img, cv2.COLOR_BGR2GRAY)
-    simpleImg = cv2.Canny(simpleImg, threshold1 = 150, threshold2 = 300)
-    simpleImg = maskedArea(simpleImg)
+    simpleImg = np.zeros((510, 870, 1), dtype = "uint8")
+    print(simpleImg)
+    simpleImg = cv2.cvtColor(simpleImg, cv2.COLOR_BGR2GRAY)
+    print(simpleImg)
+    # simpleImg = cv2.Canny(simpleImg, threshold1 = 150, threshold2 = 300)
+    # simpleImg = maskedArea(simpleImg)
     return simpleImg
 
 def findLines():
@@ -51,7 +54,7 @@ def findCircles(bwImg):
         cv2.circle(bwImg, (i[0], i[1]), 2, (100, 100, 255), 3)
     return bwImg
 
-
+cv2.imshow('Window', getSimpleImage())
 #
 # for i in list(range(4))[::-1]:
 #     print(i+1)
