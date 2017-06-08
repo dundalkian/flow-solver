@@ -6,6 +6,7 @@ import itertools
 
 #numpy, pillow, opencv
 
+# TODO - FIGURE OUT HOW TO MAKE GREY CONVERSION QUICKER, AS IT STANDS AT PEAK PERFORMANCE ITS ABILITY TO READ A BOARD WILL ONLY BE TWICE AS FAST AS ME PLAYING AT PR TIME
 
 # TODO - Make the mask automatically applied
 def maskedArea(img):
@@ -20,6 +21,7 @@ def COLOR_BGR2GREY(BGRImg):
     greyImg = np.zeros((870, 510), dtype="uint8")
     for indexX, line in enumerate(BGRImg):
         for indexY, pixel in enumerate(line):
+            # Currently using max (For better thresholding), also consider using average
             greyImg[indexX][indexY] = max(pixel)
     return greyImg
 
@@ -53,17 +55,12 @@ def findLines():
 
 
 # TODO - Find Circle optimizations for all boards. Also, find relative size of circles on rect. boards.
-def findCircles(bwImg):
-    circles = cv2.HoughCircles(bwImg, cv2.HOUGH_GRADIENT, 1, 30, param1=300, param2=40, minRadius=31, maxRadius=75) #25 min 60 max good for 6x6 boards/ 31 min 80 mqx for 5x5.
-    #print(circles)
+# Uses GREY conversion, don't have this run in a loop
+def findCircles():
+    bwImg = getGreyImage()
+    circles = cv2.HoughCircles(bwImg, cv2.HOUGH_GRADIENT, 1, 30, param1=300, param2=30, minRadius=31, maxRadius=80) #25 min 60 max good for 6x6 boards/ 31 min 80 mqx for 5x5.
     circles = np.uint16(np.around(circles))  # rounds to an int,
-    print(circles)
-    for i in circles[0, :]:
-        # draw the outer circle
-        cv2.circle(bwImg, (i[0], i[1]), i[2], (100, 255, 100), 2)
-        # draw the center of the circle
-        cv2.circle(bwImg, (i[0], i[1]), 2, (100, 100, 255), 3)
-    return bwImg
+    return circles
 
 # markTime = time.time()
 # while True:
