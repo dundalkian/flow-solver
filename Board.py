@@ -12,7 +12,7 @@ def getBoard():
     i = 0
     while ((time.time() - startTime) < 2):
         # TODO - Make the bounding box apply automatically
-        simpleImage = scr.getSimpleImage()
+        simpleImage = scr.getGrayImage()
 
         lines = cv2.HoughLinesP(simpleImage, 4, np.pi/180, 400, minLineLength=400, maxLineGap=10)
 

@@ -16,19 +16,30 @@ def maskedArea(img):
     return masked
 
 
+def COLOR_BGR2GREY(BGRImg):
+    greyImg = np.zeros((870, 510), dtype="uint8")
+    for indexX, line in enumerate(BGRImg):
+        for indexY, pixel in enumerate(line):
+            greyImg[indexX][indexY] = max(pixel)
+    return greyImg
 
-def getSimpleImage():
+
+def getGreyImage():
     Img = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
-    simpleImg = np.zeros((510, 870), dtype = "uint8")
-    # print(simpleImg)
-    # simpleImg = cv2.cvtColor(Img, cv2.COLOR_BGR2GRAY)
-    # print(simpleImg)
-    # simpleImg = cv2.Canny(simpleImg, threshold1 = 150, threshold2 = 300)
-    # simpleImg = maskedArea(simpleImg)
-    return simpleImg
+    greyImg = COLOR_BGR2GREY(Img)
+    greyImg = cv2.Canny(greyImg, threshold1 = 250, threshold2 = 300)
+    greyImg = maskedArea(greyImg)
+    return greyImg
+
+def getGrayImage():
+    Img = np.array(ImageGrab.grab(bbox=(0, 30, 510, 900)))
+    grayImg = cv2.cvtColor(Img, cv2.COLOR_BGR2GRAY)
+    grayImg = cv2.Canny(grayImg, threshold1 = 150, threshold2 = 300)
+    grayImg = maskedArea(grayImg)
+    return grayImg
 
 def findLines():
-    simpleImage = getSimpleImage()
+    simpleImage = getGrayImage()
 
     lines = cv2.HoughLinesP(simpleImage, 4, np.pi / 180, 400, minLineLength=400, maxLineGap=10)
 
@@ -53,11 +64,16 @@ def findCircles(bwImg):
         # draw the center of the circle
         cv2.circle(bwImg, (i[0], i[1]), 2, (100, 100, 255), 3)
     return bwImg
-while True:
-    cv2.imshow('Window', getSimpleImage())
-    if cv2.waitKey(25) & 0xFF == ord('q'):
-        cv2.destroyAllWindows()
-        break
+
+# markTime = time.time()
+# while True:
+#     cv2.imshow('Window', getGrayImage())
+#     print(time.time() - markTime)
+#     markTime = time.time()
+#     if cv2.waitKey(25) & 0xFF == ord('q'):
+#         cv2.destroyAllWindows()
+#         break
+
     #
 # for i in list(range(4))[::-1]:
 #     print(i+1)

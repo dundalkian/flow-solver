@@ -3,7 +3,7 @@ import cv2
 
 while True:
     lineList = scr.findLines()
-    simpleImage = scr.getSimpleImage()
+    simpleImage = scr.getGreyImage()
 
     for line in lineList:
         cv2.line(simpleImage, (line[0], line[1]), (line[2], line[3]), [100, 255, 100], 4)
