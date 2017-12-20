@@ -423,3 +423,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# Projects and Solutions
+*.sln
+*.pyproj
+
