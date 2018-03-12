@@ -59,7 +59,7 @@ def findLines():
 def findCircles():
     bwImg = getGreyImage()
     circles = cv2.HoughCircles(bwImg, cv2.HOUGH_GRADIENT, 1, 30, param1=300, param2=30, minRadius=31, maxRadius=80) #25 min 60 max good for 6x6 boards/ 31 min 80 mqx for 5x5.
-    circles = np.uint16(np.around(circles))  # rounds to an int,
+    circles = np.int16(np.around(circles))  # rounds to an int,
     return circles
 
 # markTime = time.time()
